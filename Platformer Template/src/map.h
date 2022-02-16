@@ -1,5 +1,6 @@
 #pragma once
 
+#include <string>
 #include <vector>
 #include <memory>
 #include <map>
@@ -11,39 +12,37 @@ struct Sprite;
 struct Rectangle;
 
 struct Map {
-	enum TileType {
-		EMPTY_TILE,
-		WALL_TILE,
+	Map(Graphics& graphics, const std::string& map, const std::string& tile_sheet);
 
-		LEFT_TRIANGLE_TILE,
-		RIGHT_TRIANGLE_TILE,
-
-		LOW_TILE,
-		MEDIUM_TILE,
-		HIGH_TILE
-	};
 	struct CollisionTile {
-		CollisionTile(std::vector<int> heights, int row, int col, TileType tile_type) : heights(heights), row(row), col(col), tile_type(tile_type) {}
+		CollisionTile(std::vector<int> heights, int row, int col, int tile_type) : heights(heights), row(row), col(col), tile_type(tile_type) {}
 
 		std::vector<int> heights;
 		int row, col;
-		TileType tile_type;
+		int tile_type;
 	};
 
-	static Map* createTestMap(Graphics& graphics);
+	int tile_size() const { return tile_size_; }
+	int empty_index() const { return empty_tile_index_; }
+
+	float convertTileToFloat(int tile) const {
+		return tile * tile_size_ * 1.0f;
+	}
+
+	int convertFloatToTile(float number) const {
+		return (int)(number / tile_size_);
+	}
 
 	std::vector<Map::CollisionTile> getCollidingTiles(const Rectangle& rectangle) const;
 	Map::CollisionTile getCollidingTile(float x, float y) const;
 
 	void draw(Graphics& graphics) const;
 private:
-	struct Tile {
-		Tile() {}
-		Tile(TileType tile_type, std::shared_ptr<Sprite> sprite) : tile_type(tile_type), sprite(sprite) {}
 
-		TileType tile_type;
-		std::shared_ptr<Sprite> sprite;
-	};
+	std::shared_ptr<Sprite> map_sprite_;
+	std::vector<std::vector<int>> map_array_;
+	std::map<int, std::vector<int>> tile_sheet_heights_;
 
-	std::vector<std::vector<Tile>> tiles_; // эта штучка сама по себе предполагает x,y позиции - мы же обращаемся к ним как [row][col]
+	int tile_size_;
+	int empty_tile_index_;
 };

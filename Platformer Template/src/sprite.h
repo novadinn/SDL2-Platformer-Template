@@ -9,6 +9,7 @@ struct Graphics;
 
 struct Sprite {
 	Sprite(Graphics& graphics, const std::string& file_name, int x, int y, int width, int height);
+	Sprite(Graphics& graphics, const std::string& file_name);
 
 	virtual void update() {}
 	void draw(Graphics& graphics, float x, float y);

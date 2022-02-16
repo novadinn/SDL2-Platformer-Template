@@ -3,14 +3,13 @@
 #include <cmath>
 #include <vector>
 
-#include "graphics.h" // __DEBUG__
 #include "map.h"
 #include "rectangle.h"
 
 namespace {
 	const float kWalkingAcceleration = 0.00083007812f;
 	const float kMaxSpeedX = 0.15859375f;
-	const float kFriction = 0.75f;
+	const float kFriction = 0.85f;
 
 	const float kAirAcceleration = 0.0003125f;
 	const float kJumpGravity = 0.0003125f;
@@ -45,17 +44,6 @@ void Player::update(int elapsed_time, const Map& map) {
 
 void Player::draw(Graphics& graphics) {
 	sprite_.draw(graphics, x_, y_);
-
-	if (delta_x_ > 0.0f) {
-		graphics.drawRect(rightCollision(delta_x_), 0, 255, 0);
-	} else if(delta_x_ < 0.0f) {
-		graphics.drawRect(leftCollision(delta_x_), 255, 0, 0);
-	}
-	if (delta_y_ > 0.0f) {
-		graphics.drawRect(bottomCollision(delta_y_), 0, 0, 255);
-	} else if (delta_y_ < 0.0f) {
-		graphics.drawRect(topCollision(delta_y_), 255, 255, 255);
-	}
 }
 
 void Player::startMovingLeft() {
@@ -104,15 +92,15 @@ void Player::updateX(int elapsed_time, const Map& map) {
 	delta_x_ = delta_x;
 
 	if (delta_x > 0) {
-		const Rectangle collision_rectangle = rightCollision(delta_x);
+		const Rectangle collision_rectangle = rightCollision(delta_x, map);
 		float closest_pixel_position = collision_rectangle.right();
 		const std::vector<Map::CollisionTile> tiles(map.getCollidingTiles(collision_rectangle));
 		for (size_t i = 0; i < tiles.size(); ++i) {
-			if (tiles[i].tile_type != Map::EMPTY_TILE) {
-				for (int j = 0; j < generics::kTileSize; ++j) {
+			if (tiles[i].tile_type != map.empty_index()) {
+				for (int j = 0; j < map.tile_size(); ++j) {
 					Rectangle height_rect(
-						generics::convertTileToFloat(tiles[i].col) + j,
-						generics::convertTileToFloat(tiles[i].row) + generics::kTileSize - tiles[i].heights[j],
+						map.convertTileToFloat(tiles[i].col) + j,
+						map.convertTileToFloat(tiles[i].row) + map.tile_size() - tiles[i].heights[j],
 						1,
 						tiles[i].heights[j] * 1.0f);
 					if (collision_rectangle.collidesWith(height_rect)) {
@@ -133,15 +121,15 @@ void Player::updateX(int elapsed_time, const Map& map) {
 		}
 
 		{
-			const Rectangle collision_rectangle = leftCollision(0);
+			const Rectangle collision_rectangle = leftCollision(0, map);
 			float closest_pixel_position = collision_rectangle.left();
 			const std::vector<Map::CollisionTile> tiles(map.getCollidingTiles(collision_rectangle));
 			for (size_t i = 0; i < tiles.size(); ++i) {
-				if (tiles[i].tile_type != Map::EMPTY_TILE) {
-					for (int j = 0; j < generics::kTileSize; ++j) {
+				if (tiles[i].tile_type != map.empty_index()) {
+					for (int j = 0; j < map.tile_size(); ++j) {
 						Rectangle height_rect(
-							generics::convertTileToFloat(tiles[i].col) + j,
-							generics::convertTileToFloat(tiles[i].row) + generics::kTileSize - tiles[i].heights[j],
+							map.convertTileToFloat(tiles[i].col) + j,
+							map.convertTileToFloat(tiles[i].row) + map.tile_size() - tiles[i].heights[j],
 							1,
 							tiles[i].heights[j] * 1.0f);
 						if (collision_rectangle.collidesWith(height_rect)) {
@@ -160,15 +148,15 @@ void Player::updateX(int elapsed_time, const Map& map) {
 			}
 		}
 	} else {
-		const Rectangle collision_rectangle = leftCollision(delta_x);
+		const Rectangle collision_rectangle = leftCollision(delta_x, map);
 		float closest_pixel_position = collision_rectangle.left();
 		const std::vector<Map::CollisionTile> tiles(map.getCollidingTiles(collision_rectangle));
 		for (size_t i = 0; i < tiles.size(); ++i) {
-			if (tiles[i].tile_type != Map::EMPTY_TILE) {
-				for (int j = 0; j < generics::kTileSize; ++j) {
+			if (tiles[i].tile_type != map.empty_index()) {
+				for (int j = 0; j < map.tile_size(); ++j) {
 					Rectangle height_rect(
-						generics::convertTileToFloat(tiles[i].col) + j,
-						generics::convertTileToFloat(tiles[i].row) + generics::kTileSize - tiles[i].heights[j],
+						map.convertTileToFloat(tiles[i].col) + j,
+						map.convertTileToFloat(tiles[i].row) + map.tile_size() - tiles[i].heights[j],
 						1,
 						tiles[i].heights[j] * 1.0f);
 					if (collision_rectangle.collidesWith(height_rect)) {
@@ -189,15 +177,15 @@ void Player::updateX(int elapsed_time, const Map& map) {
 		}
 
 		{
-			const Rectangle collision_rectangle = rightCollision(delta_x);
+			const Rectangle collision_rectangle = rightCollision(delta_x, map);
 			float closest_pixel_position = collision_rectangle.right();
 			const std::vector<Map::CollisionTile> tiles(map.getCollidingTiles(collision_rectangle));
 			for (size_t i = 0; i < tiles.size(); ++i) {
-				if (tiles[i].tile_type != Map::EMPTY_TILE) {
-					for (int j = 0; j < generics::kTileSize; ++j) {
+				if (tiles[i].tile_type != map.empty_index()) {
+					for (int j = 0; j < map.tile_size(); ++j) {
 						Rectangle height_rect(
-							generics::convertTileToFloat(tiles[i].col) + j,
-							generics::convertTileToFloat(tiles[i].row) + generics::kTileSize - tiles[i].heights[j],
+							map.convertTileToFloat(tiles[i].col) + j,
+							map.convertTileToFloat(tiles[i].row) + map.tile_size() - tiles[i].heights[j],
 							1,
 							tiles[i].heights[j] * 1.0f);
 						if (collision_rectangle.collidesWith(height_rect)) {
@@ -230,11 +218,11 @@ void Player::updateY(int elapsed_time, const Map& map) {
 		const std::vector<Map::CollisionTile> tiles(map.getCollidingTiles(collision_rectangle));
 		float closest_pixel_position = collision_rectangle.bottom();
 		for (size_t i = 0; i < tiles.size(); ++i) {
-			if (tiles[i].tile_type != Map::EMPTY_TILE) {
-				for (int j = 0; j < generics::kTileSize; ++j) {
+			if (tiles[i].tile_type != map.empty_index()) {
+				for (int j = 0; j < map.tile_size(); ++j) {
 					Rectangle height_rect(
-						generics::convertTileToFloat(tiles[i].col) + j,
-						generics::convertTileToFloat(tiles[i].row) + generics::kTileSize - tiles[i].heights[j],
+						map.convertTileToFloat(tiles[i].col) + j,
+						map.convertTileToFloat(tiles[i].row) + map.tile_size() - tiles[i].heights[j],
 						1,
 						tiles[i].heights[j] * 1.0f);
 					if (collision_rectangle.collidesWith(height_rect)) {
@@ -255,11 +243,11 @@ void Player::updateY(int elapsed_time, const Map& map) {
 			if (on_ground()) {
 				const float x_point = delta_x_ > 0.0f ? collision_rectangle.left() : collision_rectangle.right();
 				const float y_point = collision_rectangle.bottom() + delta_y;
-				Map::CollisionTile tile(map.getCollidingTile(x_point, y_point).tile_type == Map::EMPTY_TILE ?
+				Map::CollisionTile tile(map.getCollidingTile(x_point, y_point).tile_type == map.empty_index() ?
 					map.getCollidingTile(x_point, y_point + generics::kTileOffset) : map.getCollidingTile(x_point, y_point));
-				if (tile.tile_type != Map::EMPTY_TILE) {
-					const int height_value = (int)(x_point - generics::convertTileToFloat(tile.col));
-					const float tile_height = generics::convertTileToFloat(tile.row) + generics::kTileSize - tile.heights[height_value];
+				if (tile.tile_type != map.empty_index()) {
+					const int height_value = (int)(x_point - map.convertTileToFloat(tile.col));
+					const float tile_height = map.convertTileToFloat(tile.row) + map.tile_size() - tile.heights[height_value];
 					y_ = tile_height - kCollisionRectangleY.bottom();
 				} else {
 					y_ += delta_y;
@@ -276,11 +264,11 @@ void Player::updateY(int elapsed_time, const Map& map) {
 			float closest_pixel_position = collision_rectangle.top();
 			const std::vector<Map::CollisionTile> tiles(map.getCollidingTiles(collision_rectangle));
 			for (size_t i = 0; i < tiles.size(); ++i) {
-				if (tiles[i].tile_type != Map::EMPTY_TILE) {
-					for (int j = 0; j < generics::kTileSize; ++j) {
+				if (tiles[i].tile_type != map.empty_index()) {
+					for (int j = 0; j < map.tile_size(); ++j) {
 						Rectangle height_rect(
-							generics::convertTileToFloat(tiles[i].col) + j,
-							generics::convertTileToFloat(tiles[i].row) + generics::kTileSize - tiles[i].heights[j],
+							map.convertTileToFloat(tiles[i].col) + j,
+							map.convertTileToFloat(tiles[i].row) + map.tile_size() - tiles[i].heights[j],
 							1,
 							tiles[i].heights[j] * 1.0f);
 						if (collision_rectangle.collidesWith(height_rect)) {
@@ -303,11 +291,11 @@ void Player::updateY(int elapsed_time, const Map& map) {
 		float closest_pixel_position = collision_rectangle.top();
 		const std::vector<Map::CollisionTile> tiles(map.getCollidingTiles(collision_rectangle));
 		for (size_t i = 0; i < tiles.size(); ++i) {
-			if (tiles[i].tile_type != Map::EMPTY_TILE) {
-				for (int j = 0; j < generics::kTileSize; ++j) {
+			if (tiles[i].tile_type != map.empty_index()) {
+				for (int j = 0; j < map.tile_size(); ++j) {
 					Rectangle height_rect(
-						generics::convertTileToFloat(tiles[i].col) + j,
-						generics::convertTileToFloat(tiles[i].row) + generics::kTileSize - tiles[i].heights[j],
+						map.convertTileToFloat(tiles[i].col) + j,
+						map.convertTileToFloat(tiles[i].row) + map.tile_size() - tiles[i].heights[j],
 						1,
 						tiles[i].heights[j] * 1.0f);
 					if (collision_rectangle.collidesWith(height_rect)) {
@@ -333,11 +321,11 @@ void Player::updateY(int elapsed_time, const Map& map) {
 			const std::vector<Map::CollisionTile> tiles(map.getCollidingTiles(collision_rectangle));
 			float closest_pixel_position = collision_rectangle.bottom();
 			for (size_t i = 0; i < tiles.size(); ++i) {
-				if (tiles[i].tile_type != Map::EMPTY_TILE) {
-					for (int j = 0; j < generics::kTileSize; ++j) {
+				if (tiles[i].tile_type != map.empty_index()) {
+					for (int j = 0; j < map.tile_size(); ++j) {
 						Rectangle height_rect(
-							generics::convertTileToFloat(tiles[i].col) + j,
-							generics::convertTileToFloat(tiles[i].row) + generics::kTileSize - tiles[i].heights[j],
+							map.convertTileToFloat(tiles[i].col) + j,
+							map.convertTileToFloat(tiles[i].row) + map.tile_size() - tiles[i].heights[j],
 							1,
 							tiles[i].heights[j] * 1.0f);
 						if (collision_rectangle.collidesWith(height_rect)) {
@@ -353,27 +341,27 @@ void Player::updateY(int elapsed_time, const Map& map) {
 			if (closest_pixel_position != collision_rectangle.bottom()) {
 				y_ = closest_pixel_position - kCollisionRectangleY.bottom();
 				on_ground_ = true;
-				velocity_y_ = 0.0f;
+				// тут velocity на 0 ставилось, но были ошибки
 			}
 		}
 	}
 }
 
-Rectangle Player::leftCollision(float delta) {
+Rectangle Player::leftCollision(float delta, const Map& map) {
 	return Rectangle(
 		x_ + kCollisionRectangleX.left() + delta,
 		y_ + kCollisionRectangleX.top(),
 		kCollisionRectangleX.width()/2 - delta,
-		kCollisionRectangleX.height() - (on_ground() ? generics::kTileSize : generics::kTileOffset)
+		kCollisionRectangleX.height() - (on_ground() ? map.tile_size() : generics::kTileOffset)
 	);
 }
 
-Rectangle Player::rightCollision(float delta) {
+Rectangle Player::rightCollision(float delta, const Map& map) {
 	return Rectangle(
 		x_ + + kCollisionRectangleX.left() + kCollisionRectangleX.width()/2,
 		y_ + kCollisionRectangleX.top(),
 		kCollisionRectangleX.width() / 2 + delta,
-		kCollisionRectangleX.height() - (on_ground() ? generics::kTileSize : generics::kTileOffset)
+		kCollisionRectangleX.height() - (on_ground() ? map.tile_size() : generics::kTileOffset)
 	);
 }
 

@@ -11,6 +11,19 @@ Sprite::Sprite(Graphics& graphics, const std::string& file_name, int x, int y, i
 	source_rectangle_.h = height;
 }
 
+Sprite::Sprite(Graphics& graphics, const std::string& file_name) {
+	bool black_is_transparent = true;
+	sprite_sheet_ = graphics.loadImage(file_name, black_is_transparent);
+	
+	uint32_t format;
+	int access, w, h;
+	SDL_QueryTexture(sprite_sheet_, &format, &access, &w, &h);
+	source_rectangle_.x = 0;
+	source_rectangle_.y = 0;
+	source_rectangle_.w = w;
+	source_rectangle_.h = h;
+}
+
 void Sprite::draw(Graphics& graphics, float x, float y) {
 	SDL_Rect destination_rectangle;
 	destination_rectangle.x = generics::floatToInt(x);

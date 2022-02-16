@@ -27,7 +27,7 @@ void Game::eventLoop() {
 	Input input;
 	SDL_Event event;
 
-	map_.reset(Map::createTestMap(graphics));
+	map_.reset(new Map(graphics, "map", "tile_sheet"));
 	player_.reset(new Player(graphics, 320, 240));
 	camera_.reset(new Camera(0, 0, generics::kScreenWidth, generics::kScreenHeight));
 

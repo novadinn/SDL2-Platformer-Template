@@ -27,8 +27,8 @@ private:
 	void updateX(int elapsed_time, const Map& map);
 	void updateY(int elapsed_time, const Map& map);
 
-	Rectangle leftCollision(float delta);
-	Rectangle rightCollision(float delta);
+	Rectangle leftCollision(float delta, const Map& map);
+	Rectangle rightCollision(float delta, const Map& map);
 	Rectangle topCollision(float delta);
 	Rectangle bottomCollision(float delta);
 
