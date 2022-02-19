@@ -7,7 +7,6 @@
 Graphics::Graphics() {
     window_ = SDL_CreateWindow("Platformer Template", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, generics::kScreenWidth, generics::kScreenHeight, 0);
 	renderer_ = SDL_CreateRenderer(window_, -1, 0);
-    SDL_ShowCursor(SDL_DISABLE);
     x_offset_ = 0.0f;
     y_offset_ = 0.0f;
 }
@@ -49,6 +48,7 @@ void Graphics::blitSurface(SDL_Texture* source, SDL_Rect* source_rectangle, SDL_
     }
     destination_rectangle->x += generics::round(x_offset_);
     destination_rectangle->y += generics::round(y_offset_);
+
     SDL_RenderCopy(renderer_, source, source_rectangle, destination_rectangle);
 }
 
