@@ -66,12 +66,19 @@ std::vector<Map::CollisionTile> Map::getCollidingTiles(const Rectangle& rectangl
 
     for (int row = first_row; row <= last_row; ++row) {
         for (int col = first_col; col <= last_col; ++col) {
-            tiles.push_back(CollisionTile(tile_sheet_heights_.at(map_array_[row][col]), row, col, map_array_[row][col]));
-            if (map_array_[row - 1][col] != empty_tile_index_) {
-                tiles.push_back(CollisionTile(tile_sheet_heights_.at(map_array_[row-1][col]), row-1, col, map_array_[row-1][col]));
-            }
-            if (map_array_[row + 1][col] != empty_tile_index_) {
-                tiles.push_back(CollisionTile(tile_sheet_heights_.at(map_array_[row + 1][col]), row + 1, col, map_array_[row + 1][col]));
+            if (row > -1 && row < map_array_.size() && col > -1 && col < map_array_[row].size()) {
+                tiles.push_back(CollisionTile(tile_sheet_heights_.at(map_array_[row][col]), row, col, map_array_[row][col]));
+
+                if (row > 0) {
+                    if (map_array_[row - 1][col] != empty_tile_index_) {
+                        tiles.push_back(CollisionTile(tile_sheet_heights_.at(map_array_[row - 1][col]), row - 1, col, map_array_[row - 1][col]));
+                    }
+                }
+                if (row < map_array_.size() - 1) {
+                    if (map_array_[row + 1][col] != empty_tile_index_) {
+                        tiles.push_back(CollisionTile(tile_sheet_heights_.at(map_array_[row + 1][col]), row + 1, col, map_array_[row + 1][col]));
+                    }
+                }
             }
         }
     }
